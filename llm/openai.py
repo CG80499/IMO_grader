@@ -15,7 +15,7 @@ class OpenAI(BaseLLM):
     api_key: str
     org_id: str | None = None
     max_retries: int = 5
-    timeout: float = 30
+    timeout: float = 180
     verbose: bool = False
     total_prompt_tokens: int = 0
     total_completion_tokens: int = 0
@@ -123,7 +123,7 @@ class OpenAIReasoning(BaseLLM):
     api_key: str
     org_id: str | None = None
     max_retries: int = 5
-    timeout: float = 30
+    timeout: float = 360
     verbose: bool = False
     total_prompt_tokens: int = 0
     total_completion_tokens: int = 0
@@ -144,7 +144,7 @@ class OpenAIReasoning(BaseLLM):
                 OpenAIReasoningMessage(role=message.role, content=message.content)
                 for message in chat.messages
             ],
-            max_tokens=max_tokens,
+            max_completion_tokens=max_tokens,
             reasoning_effort=self.reasoning_effort,
         )
         response = complete(

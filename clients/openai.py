@@ -105,7 +105,7 @@ class Request(BaseModel):
 class ReasoningRequest(BaseModel):
     model: OpenAIReasoningModelName
     messages: Sequence[OpenAIReasoningMessage]
-    max_tokens: int | None = None
+    max_completion_tokens: int | None = None
     reasoning_effort: Literal["low", "medium", "high"] | None = None
 
 
@@ -162,4 +162,5 @@ def complete(
             response_time=perf_counter() - start,
             model=request.model,
         )
+
     return Response.model_validate(result.json())

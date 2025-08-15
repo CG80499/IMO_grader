@@ -212,9 +212,9 @@ if __name__ == "__main__":
     org_id = os.getenv("OPENAI_ORG_ID")
 
     models: list[OpenAIReasoningModelName | OpenAIChatModelName] = [
-        "gpt-4.1-2025-04-14",
+        # "gpt-4.1-2025-04-14",
         # "o3-2025-04-16",
-        # "o4-mini-2025-04-16",
+        "o4-mini-2025-04-16",
         # "ft:o4-mini-2025-04-16:elicit:proof-v1:BzGz36t7:ckpt-step-10",
     ]
 
