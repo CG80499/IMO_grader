@@ -12,6 +12,10 @@ from llm.core import TextChat
 from llm.core import TextUserMessage
 from llm.openai import OpenAI
 from llm.core import BaseLLM
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class TheoremSample(BaseModel):
@@ -145,7 +149,12 @@ if __name__ == "__main__":
     print(f"Categories: {theorems[2].categories}")
     print(f"Content preview: {theorems[2].contents[0][:100]}...")
 
-    llm = OpenAI(model="gpt-4.1-2025-04-14")
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY is not set")
+    org_id = os.getenv("OPENAI_ORG_ID")
+
+    llm = OpenAI(model="gpt-4o-2024-08-06", api_key=api_key, org_id=org_id)
 
     theorem_samples = make_theorem_samples(llm, theorems[:2000])
     print(f"Made {len(theorem_samples)} theorem samples")

@@ -13,7 +13,7 @@ def map_threaded(
     it: Iterable[_T],
     /,
     max_concurrency: int,
-    show_progress: bool = False,
+    show_progress: bool | str = False,
     *args: _P.args,
     **kwargs: _P.kwargs,
 ) -> list[_V_co]:

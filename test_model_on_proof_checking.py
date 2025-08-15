@@ -8,6 +8,9 @@ from utils import map_threaded
 from llm.core import TextChat, TextUserMessage, BaseLLM
 from llm.openai import OpenAI, OpenAIReasoning
 from clients.openai import OpenAIReasoningModelName, OpenAIChatModelName
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class TheoremSample(BaseModel):
@@ -63,45 +66,6 @@ def chat_model(model: str) -> TypeGuard[OpenAIChatModelName]:
     return not reasoning_chat_model(model)
 
 
-# Accuracy: 0.5575 o4 mini accuracy
-# Model: o4-mini-2025-04-16
-#   Overall Accuracy: 55.75% (669/1200)
-#   Difficulty Breakdown:
-#     Difficulty 1: 55.26% (21/38)
-#     Difficulty 2: 58.29% (211/362)
-#     Difficulty 3: 56.75% (227/400)
-#     Difficulty 4: 52.09% (199/382)
-#     Difficulty 5: 61.11% (11/18)
-
-# Accuracy: 0.5758333333333333 o4 mini ft
-
-#   Overall Accuracy: 59.25% (711/1200)
-#   Difficulty Breakdown:
-#     Difficulty 1: 76.32% (29/38)
-#     Difficulty 2: 64.92% (235/362)
-#     Difficulty 3: 57.00% (228/400)
-#     Difficulty 4: 54.97% (210/382)
-#     Difficulty 5: 50.00% (9/18)
-
-# Model: ft:o4-mini-2025-04-16:elicit:proof-v0:Bwejms4L:ckpt-step-9
-#   Overall Accuracy: 57.58% (691/1200)
-#   Difficulty Breakdown:
-#     Difficulty 1: 68.42% (26/38)
-#     Difficulty 2: 64.09% (232/362)
-#     Difficulty 3: 55.00% (220/400)
-#     Difficulty 4: 53.93% (206/382)
-#     Difficulty 5: 38.89% (7/18)
-
-
-# Model: o3-2025-04-16
-# Model: o3-2025-04-16
-#   Overall Accuracy: 58.58% (703/1200)
-#   Difficulty Breakdown:
-#     Difficulty 1: 65.79% (25/38)
-#     Difficulty 2: 63.54% (230/362)
-#     Difficulty 3: 57.75% (231/400)
-#     Difficulty 4: 54.71% (209/382)
-#     Difficulty 5: 44.44% (8/18)
 def evaluate_theorem_sample(
     llm: BaseLLM,
     theorem_sample: TheoremSample,
@@ -171,62 +135,12 @@ def run_model_on_dataset(
     return [result for sublist in results for result in sublist]
 
 
-_TEST_THEOREM_SAMPLES: list[TheoremSample] = [
-    TheoremSample(
-        theorem="2 + 2 = 4",
-        proof="Adding 2 to 2 yields 4, as per elementary arithmetic. Therefore, 2 + 2 = 4.",
-        subtly_incorrect_proof="Adding 2 to 2 sometimes yields 5 due to rounding errors in fractions, so 2 + 2 = 5.",
-        difficulty_justification="Trivial arithmetic fact.",
-        difficulty_score=1,
-        brainstorming="",
-    ),
-    TheoremSample(
-        theorem="The interior angles of a triangle sum to 180 degrees",
-        proof=(
-            "Draw a line parallel to one side of the triangle through the opposite vertex. "
-            "The alternate interior angles show that the three angles add up to a straight line, 180°."
-        ),
-        subtly_incorrect_proof=(
-            "Since a square has interior angles summing to 360°, a triangle (with one less side) must have 240° of interior angle. "
-            "Therefore, 180° is incorrect."
-        ),
-        difficulty_justification="Well-known geometric fact.",
-        difficulty_score=1,
-        brainstorming="",
-    ),
-    TheoremSample(
-        theorem="1 is not a prime number",
-        proof="By definition, a prime number has exactly two positive divisors, 1 and itself. The number 1 has only one positive divisor, so it is not prime.",
-        subtly_incorrect_proof="1 is prime because it divides itself exactly once, satisfying the definition of prime numbers.",
-        difficulty_justification="Definition-based fact.",
-        difficulty_score=1,
-        brainstorming="",
-    ),
-    TheoremSample(
-        theorem="√2 is irrational",
-        proof=(
-            "Assume √2 = a/b in lowest terms. Then 2 = a²/b², so a² = 2b², hence a is even. "
-            "Let a = 2k, so 4k² = 2b² and b is even, contradicting lowest terms. Therefore √2 is irrational."
-        ),
-        subtly_incorrect_proof="√2 = 1.414… which is a terminating decimal when written to enough places, hence rational.",
-        difficulty_justification="Classic proof by contradiction taught in school.",
-        difficulty_score=1,
-        brainstorming="",
-    ),
-    TheoremSample(
-        theorem="There are infinitely many prime numbers",
-        proof=(
-            "Assume finitely many primes p₁,…,pₙ. Let N = p₁⋯pₙ + 1. "
-            "N is not divisible by any pᵢ, so it is prime or divisible by a prime not in the list, contradicting finiteness."
-        ),
-        subtly_incorrect_proof="The largest prime known is currently 2^82,589,933−1, so primes are finite.",
-        difficulty_justification="Euclid’s classic argument.",
-        difficulty_score=1,
-        brainstorming="",
-    ),
-]
-
 if __name__ == "__main__":
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY is not set")
+    org_id = os.getenv("OPENAI_ORG_ID")
+
     models: list[OpenAIReasoningModelName | OpenAIChatModelName] = [
         "o4-mini-2025-04-16",
         # Add more model names here as desired, e.g.:
@@ -247,18 +161,13 @@ if __name__ == "__main__":
     ]
     print(f"Running on {len(theorem_samples)} samples")
 
-    api_key = os.environ.get("OPENAI_API_KEY")
-    if not api_key:
-        raise RuntimeError("OPENAI_API_KEY environment variable is required")
-    org_id = os.environ.get("OPENAI_ORG_ID")
-
     for model in models:
         print(f"\nRunning evaluation for model: {model} …")
         if chat_model(model):
             llm: BaseLLM = OpenAI(model=model, api_key=api_key, org_id=org_id)
         else:
             llm = OpenAIReasoning(
-                model=model, api_key=api_key, org_id=org_id, reasoning_effort="medium"
+                model=model, api_key=api_key, org_id=org_id, reasoning_effort="high"
             )
 
         results = run_model_on_dataset(llm, theorem_samples, model)

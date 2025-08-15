@@ -7,8 +7,10 @@ requires-python = ">=3.10"
 dependencies = [
     "bs4>=0.0.2",
     "datasets>=4.0.0",
+    "dotenv>=0.9.9",
     "pandas>=2.3.1",
     "pydantic>=2.11.7",
+    "pytest>=8.4.1",
     "requests>=2.32.4",
     "structlog>=25.4.0",
     "tqdm>=4.67.1",

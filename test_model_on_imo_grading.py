@@ -8,6 +8,10 @@ from llm.openai import OpenAI, OpenAIReasoning
 from clients.openai import OpenAIReasoningModelName, OpenAIChatModelName
 from typing import TypeGuard
 from llm.core import BaseLLM
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 GRADING_PROMPT = """Problem: {problem}
 
@@ -200,6 +204,11 @@ def compare_with_human_grades(llm: BaseLLM) -> dict[str, float]:
 
 
 if __name__ == "__main__":
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY is not set")
+    org_id = os.getenv("OPENAI_ORG_ID")
+
     models: list[OpenAIReasoningModelName | OpenAIChatModelName] = [
         "gpt-4.1-2025-04-14",
         "o3-2025-04-16",
@@ -218,9 +227,9 @@ if __name__ == "__main__":
 
     for model in models:
         if chat_model(model):
-            llm = OpenAI(model=model)
+            llm = OpenAI(model=model, api_key=api_key, org_id=org_id)
         else:
-            llm = OpenAIReasoning(model=model)
+            llm = OpenAIReasoning(model=model, api_key=api_key, org_id=org_id)
         all_score_diffs_by_grader.append(compare_with_human_grades(llm))
 
         # Print score differences for all solution models, organized by grading model
