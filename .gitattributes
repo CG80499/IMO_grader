@@ -1,0 +1,2 @@
+naturalproofs_proofwiki.json filter=lfs diff=lfs merge=lfs -text
+theorem_samples_gpt4_1.json filter=lfs diff=lfs merge=lfs -text

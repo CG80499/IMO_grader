@@ -1,0 +1,15 @@
+[project]
+name = "imo-grader"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "bs4>=0.0.2",
+    "datasets>=4.0.0",
+    "pandas>=2.3.1",
+    "pydantic>=2.11.7",
+    "requests>=2.32.4",
+    "structlog>=25.4.0",
+    "tqdm>=4.67.1",
+]
