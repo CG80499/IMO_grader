@@ -154,7 +154,7 @@ if __name__ == "__main__":
     cost_by_model: dict[str, float] = {}
 
     with open("theorem_samples_gpt4_1.json") as f:
-        theorem_samples = json.load(f)[:500]
+        theorem_samples = json.load(f)[150:650]
     print(f"Loaded {len(theorem_samples)} samples")
     theorem_samples = [
         TheoremSample.validate(theorem_sample) for theorem_sample in theorem_samples
@@ -242,21 +242,3 @@ if __name__ == "__main__":
                 + f"{diff_stats['accuracy']:.2%} "
                 + f"({diff_stats['correct']}/{diff_stats['total']})"
             )
-
-# Model: gpt-4.1-2025-04-14
-#   Overall Accuracy: 60.10% (601/1000)
-#   Difficulty Breakdown:
-#     Difficulty 1: 68.00% (68/100)
-#     Difficulty 2: 61.22% (240/392)
-#     Difficulty 3: 57.99% (283/488)
-#     Difficulty 4: 50.00% (8/16)
-#     Difficulty 5: 50.00% (2/4)
-
-# Model: o4-mini-2025-04-16
-#   Overall Accuracy: 67.50% (675/1000)
-#   Difficulty Breakdown:
-#     Difficulty 1: 73.00% (73/100) (+5)
-#     Difficulty 2: 69.90% (274/392) (+8.7)
-#     Difficulty 3: 64.55% (315/488) (+6.6)
-#     Difficulty 4: 68.75% (11/16) (+18.7)
-#     Difficulty 5: 50.00% (2/4) (+0)

@@ -114,6 +114,13 @@ def compare_with_human_grades(llm: BaseLLM) -> dict[str, float]:
     # Group by model that generated the solutions
     unique_models = df["model_name"].unique()  # type: ignore
 
+    # The newer results don't seem to have expert human judge results, so we'll remove them.
+    unique_models = [
+        model
+        for model in unique_models
+        if model not in ["GPT-5 (high)", "Grok 4 (Specific Prompt) 🚨*"]
+    ]
+
     print(
         f"Grading solutions from {len(unique_models)} models using {llm.model_name}..."
     )
