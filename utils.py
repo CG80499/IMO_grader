@@ -45,8 +45,6 @@ def map_threaded(
         total: int | None = len(list(it))
         pbar = tqdm(total=total, desc=desc)
 
-    # Use ThreadPoolExecutor for concurrent mapping
-    # If max_concurrency is None, let the executor choose a sensible default
     with ThreadPoolExecutor(max_workers=max_concurrency) as executor:
         future_to_index: dict[Future[_V_co], int] = {}
         for idx, value in enumerate(it):
