@@ -1,4 +1,4 @@
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from typing import Callable, Iterable, TypeVar, Concatenate, ParamSpec
 from tqdm import tqdm
 import bs4
@@ -42,13 +42,13 @@ def map_threaded(
     pbar = None
     if show_progress:
         desc = "Processing" if show_progress is True else str(show_progress)
-        total: int | None = len(it)
+        total: int | None = len(list(it))
         pbar = tqdm(total=total, desc=desc)
 
     # Use ThreadPoolExecutor for concurrent mapping
     # If max_concurrency is None, let the executor choose a sensible default
     with ThreadPoolExecutor(max_workers=max_concurrency) as executor:
-        future_to_index: dict[object, int] = {}
+        future_to_index: dict[Future[_V_co], int] = {}
         for idx, value in enumerate(it):
             future = executor.submit(fn, value, *args, **kwargs)
             future_to_index[future] = idx

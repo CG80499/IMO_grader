@@ -1,2 +1,3 @@
 uvx ruff format
-uvx ruff check 
+uvx ruff check
+uv run pyright

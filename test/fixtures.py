@@ -1,6 +1,6 @@
 """Not currently used but can be useful for testing."""
 
-from naturalproofs_models import TheoremSample
+from naturalproofs_models import TheoremSample  # type: ignore
 
 _TEST_THEOREM_SAMPLES: list[TheoremSample] = [
     TheoremSample(

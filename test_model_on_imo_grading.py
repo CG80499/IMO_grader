@@ -86,7 +86,6 @@ def grade_solution(llm: BaseLLM, problem: str, solution: str) -> float | None:
         chat.messages[0].content += THINK_STEP_BY_STEP_SUFFIX
         raw_response = llm.predict(
             chat,
-            model=model,
             max_tokens=4_000,
             temperature=1.0,
         )
@@ -107,13 +106,13 @@ def compare_with_human_grades(llm: BaseLLM) -> dict[str, float]:
     # Load IMO dataset
     ds = load_dataset("MathArena/imo_2025_outputs")
 
-    df = ds["train"].to_pandas()
+    df = ds["train"].to_pandas()  # type: ignore
 
     # Calculate human average scores
-    df["human_avg_score"] = (df["points_judge_1"] + df["points_judge_2"]) / 2
+    df["human_avg_score"] = (df["points_judge_1"] + df["points_judge_2"]) / 2  # type: ignore
 
     # Group by model that generated the solutions
-    unique_models = df["model_name"].unique()
+    unique_models = df["model_name"].unique()  # type: ignore
 
     print(
         f"Grading solutions from {len(unique_models)} models using {llm.model_name}..."
@@ -123,7 +122,7 @@ def compare_with_human_grades(llm: BaseLLM) -> dict[str, float]:
     all_model_results = {}
 
     for solution_model in unique_models:
-        model_data = df[df["model_name"] == solution_model]
+        model_data = df[df["model_name"] == solution_model]  # type: ignore
 
         # Grade all solutions in parallel
         def grade_row(row):
@@ -180,25 +179,21 @@ def compare_with_human_grades(llm: BaseLLM) -> dict[str, float]:
             model_scores.append(model_score)
             human_scores.append(human_score)
 
-        # Calculate correlation and statistics for this model
-        if model_scores:
-            model_df = pd.DataFrame(
-                {"model_score": model_scores, "human_score": human_scores}
-            )
+        model_df = pd.DataFrame(
+            {"model_score": model_scores, "human_score": human_scores}
+        )
 
-            correlation = model_df["model_score"].corr(model_df["human_score"])
-            mae = (model_df["model_score"] - model_df["human_score"]).abs().mean()
+        correlation = model_df["model_score"].corr(model_df["human_score"])  # type: ignore
+        mae = (model_df["model_score"] - model_df["human_score"]).abs().mean()  # type: ignore
 
-            print(f"\nStats for {solution_model}:")
-            print(f"Correlation: {correlation:.3f}")
-            print(f"Mean Absolute Error: {mae:.3f}")
-            print(f"Model Score: {sum(model_df['model_score'])}")
-            print(f"Human Score: {sum(model_df['human_score'])}")
-            score_diff = abs(
-                sum(model_df["model_score"]) - sum(model_df["human_score"])
-            )
-            print(f"Score Difference: {score_diff}")
-            all_score_diffs[solution_model] = score_diff
+        print(f"\nStats for {solution_model}:")
+        print(f"Correlation: {correlation:.3f}")
+        print(f"Mean Absolute Error: {mae:.3f}")
+        print(f"Model Score: {sum(model_df['model_score'])}")
+        print(f"Human Score: {sum(model_df['human_score'])}")
+        score_diff = abs(sum(model_df["model_score"]) - sum(model_df["human_score"]))
+        print(f"Score Difference: {score_diff}")
+        all_score_diffs[solution_model] = score_diff
 
     return all_score_diffs
 
@@ -211,9 +206,9 @@ if __name__ == "__main__":
 
     models: list[OpenAIReasoningModelName | OpenAIChatModelName] = [
         "gpt-4.1-2025-04-14",
-        "o3-2025-04-16",
-        "o4-mini-2025-04-16",
-        "ft:o4-mini-2025-04-16:elicit:proof-v1:BzGz36t7:ckpt-step-10",
+        # "o3-2025-04-16",
+        # "o4-mini-2025-04-16",
+        # "ft:o4-mini-2025-04-16:elicit:proof-v1:BzGz36t7:ckpt-step-10",
     ]
 
     models_nice_names = {
@@ -228,8 +223,10 @@ if __name__ == "__main__":
     for model in models:
         if chat_model(model):
             llm = OpenAI(model=model, api_key=api_key, org_id=org_id)
-        else:
+        elif reasoning_chat_model(model):
             llm = OpenAIReasoning(model=model, api_key=api_key, org_id=org_id)
+        else:
+            raise ValueError(f"Invalid model: {model}")
         all_score_diffs_by_grader.append(compare_with_human_grades(llm))
 
         # Print score differences for all solution models, organized by grading model

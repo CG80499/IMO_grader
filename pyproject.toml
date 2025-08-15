@@ -10,6 +10,7 @@ dependencies = [
     "dotenv>=0.9.9",
     "pandas>=2.3.1",
     "pydantic>=2.11.7",
+    "pyright>=1.1.403",
     "pytest>=8.4.1",
     "requests>=2.32.4",
     "structlog>=25.4.0",

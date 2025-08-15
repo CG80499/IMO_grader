@@ -165,10 +165,12 @@ if __name__ == "__main__":
         print(f"\nRunning evaluation for model: {model} …")
         if chat_model(model):
             llm: BaseLLM = OpenAI(model=model, api_key=api_key, org_id=org_id)
-        else:
+        elif reasoning_chat_model(model):
             llm = OpenAIReasoning(
                 model=model, api_key=api_key, org_id=org_id, reasoning_effort="high"
             )
+        else:
+            raise ValueError(f"Invalid model: {model}")
 
         results = run_model_on_dataset(llm, theorem_samples, model)
         paired_results = list(zip(results[::2], results[1::2]))

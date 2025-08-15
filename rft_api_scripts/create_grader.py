@@ -30,12 +30,10 @@ def grade(sample, item) -> float:
 
 grader = {"type": "python", "source": grading_function}
 
-# print(json.dumps(grader, indent=2))
-
-{
-    "type": "python",
-    "source": '\ndef parse_probability(response: str) -> int | None:\n    response = response.strip()\n    if response.endswith("%"):\n        response = response[:-1]\n    if not response.isdigit():\n        return None\n    probability = int(response)\n    if probability < 0 or probability > 100:\n        return None\n    return probability\n\ndef grade(sample, item) -> float:\n    output_text = sample["output_text"]\n    reference_answer = int(item["reference_answer"])\n    assert reference_answer in [0, 100]\n    probability = parse_probability(output_text)\n    if probability is None:\n        return -0.2\n    return -abs(probability - reference_answer) / 100.0 + 1.0\n',
-}
+# {
+#     "type": "python",
+#     "source": '\ndef parse_probability(response: str) -> int | None:\n    response = response.strip()\n    if response.endswith("%"):\n        response = response[:-1]\n    if not response.isdigit():\n        return None\n    probability = int(response)\n    if probability < 0 or probability > 100:\n        return None\n    return probability\n\ndef grade(sample, item) -> float:\n    output_text = sample["output_text"]\n    reference_answer = int(item["reference_answer"])\n    assert reference_answer in [0, 100]\n    probability = parse_probability(output_text)\n    if probability is None:\n        return -0.2\n    return -abs(probability - reference_answer) / 100.0 + 1.0\n',
+# }
 
 # validate the grader
 payload = {"grader": grader}
