@@ -1,0 +1,22 @@
+[project]
+name = "tinker-test"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "datasets>=4.0.0",
+    "dotenv>=0.9.9",
+    "matplotlib>=3.10.6",
+    "numpy>=2.2.6",
+    "openai>=1.109.1",
+    "pytest>=8.4.1",
+    "pytest-asyncio>=1.1.0",
+    "tinker",
+    "torch>=2.8.0",
+    "transformers>=4.55.4",
+    "wandb>=0.21.3",
+]
+
+[tool.uv.sources]
+tinker = { path = "tinker", editable = true }

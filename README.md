@@ -1,5 +1,7 @@
 # IMO Grader
 
+**New:** I've added my Tinker GSPO, RLOO and SFT scripts to the `tinker_code/` directory for reference.
+
 This project explores a novel approach to training AI models to grade questions from the International Mathematical Olympiad (IMO) using combination of unstructured internet data + weak models to perform RL on o4 mini.
 
 **Overview**
